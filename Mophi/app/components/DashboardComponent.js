@@ -1,32 +1,55 @@
-import React from "react";
-import { View, Text, StyleSheet, useWindowDimensions, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  useWindowDimensions,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 
-const DashboardComponent = ({ name }) => {
-  const { width, height } = useWindowDimensions();
-  const navigation = useNavigation();
-  const isLandscape = width > height;
-  const handleLoginPress = () => {
-    navigation.navigate("Sidebar");
-  };
-  return ( 
-    <View
-      style={[
-        styles.container,
-        isLandscape ? { width: width } : { width: "100%" },
-      ]}
-    >
-      <View style={styles.statsContainer}>
-        <View style={styles.statBox1}>
-          <TouchableOpacity onPress={handleLoginPress}>
+const DashboardComponent = ({ name, onToggleSidebar }) => {
+  const { width } = useWindowDimensions();
+  const [screenOrientation, setScreenOrientation] = useState("portrait");
 
-            <FontAwesome name="bars" size={28} color="white" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.statBox}>
-          <Text style={styles.title}>{name}</Text>
-        </View>
+  useEffect(() => {
+    const getOrientation = () => {
+      const { width, height } = Dimensions.get("window");
+      if (width < height) {
+        setScreenOrientation("portrait");
+      } else {
+        setScreenOrientation("landscape");
+      }
+    };
+
+    const subscription = Dimensions.addEventListener("change", getOrientation);
+
+    // Call getOrientation once to set the initial orientation
+    getOrientation();
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
+
+  return (
+    <View style={[styles.container, { width }]}>
+      <TouchableOpacity style={styles.menuButton} onPress={onToggleSidebar}>
+        <FontAwesome name="bars" size={24} color="white" />
+      </TouchableOpacity>
+      <View style={styles.titleContainer}>
+        <Text
+          style={[
+            styles.title,
+            {
+              fontSize:
+                screenOrientation === "portrait" ? width * 0.06 : width * 0.04,
+            },
+          ]}
+        >
+          {name}
+        </Text>
       </View>
     </View>
   );
@@ -34,26 +57,25 @@ const DashboardComponent = ({ name }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 5,
-    backgroundColor: "#E24427",
-    borderBottomColor: "#ddd",
-    height: 50,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#16AEC5",
+    height: 60,
+  },
+  titleContainer: {
+    flex: 1,
+    justifyContent: "center",
   },
   title: {
-    fontSize: 30,
     fontWeight: "bold",
     color: "white",
+    textAlign: "left",
   },
-  statsContainer: {
-    flexDirection: "row",
-  },
-  statBox: {
-    alignItems: "center",
-    marginLeft: 30,
-  },
-  statBox1: {
-    alignItems: "center",
-    marginTop: 5,
+  menuButton: {
+    justifyContent: "center",
+    marginRight: 20,
   },
 });
 

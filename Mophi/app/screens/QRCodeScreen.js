@@ -13,7 +13,6 @@ import DashboardComponent from "../components/DashboardComponent";
 
 const QRCodeScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
   const [scannedData, setScannedData] = useState("");
   const [scannerVisible, setScannerVisible] = useState(false);
   const [flashlight, setFlashlight] = useState(false);
@@ -31,9 +30,8 @@ const QRCodeScreen = () => {
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
     setScannedData(data);
-    setScannerVisible(false); // Hide scanner after successful scan
+    setScannerVisible(false);
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
 
@@ -59,21 +57,26 @@ const QRCodeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <DashboardComponent name="QR Code" />
-      <View style={styles.separator} />
-      <View style={styles.assignmentContainer}>
-        <Text style={styles.textContainer}>Click to start scanning</Text>
-        <View style={styles.separator} />
+
+      <View style={styles.container}>
+        <Text style={styles.promptText}>Click to start scanning</Text>
+
         <TouchableOpacity onPress={() => setScannerVisible(true)}>
-          <MaterialIcons name="qr-code-scanner" size={90} color="#E24427" />
+          <MaterialIcons name="qr-code-scanner" size={90} color="#16AEC5" />
         </TouchableOpacity>
-        {scannedData ? (
-          <Text style={styles.textContainer}>Scanned Data: {scannedData}</Text>
-        ) : null}
       </View>
+
+      {scannedData !== "" && (
+        <View style={styles.scannedDataContainer}>
+          <Text style={styles.scannedDataText}>Scanned Data:</Text>
+          <Text style={styles.scannedDataText}>{scannedData}</Text>
+        </View>
+      )}
+
       {scannerVisible && (
         <View style={StyleSheet.absoluteFillObject}>
           <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+            onBarCodeScanned={handleBarCodeScanned}
             type={cameraType}
             torchMode={flashlight ? "on" : "off"}
             style={StyleSheet.absoluteFillObject}
@@ -106,21 +109,32 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     paddingTop: Constants.statusBarHeight,
+    backgroundColor: "#f0f0f0",
   },
-  assignmentContainer: {
+  container: {
     alignItems: "center",
-    backgroundColor: "#6AE228",
-    padding: 10,
-    height: 150,
+    backgroundColor: "#e0e0e0",
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
   },
-  textContainer: {
+  promptText: {
     fontWeight: "bold",
-    color: "white",
-    fontSize: 16,
+    color: "#333333",
+    fontSize: 18,
+    marginBottom: 20,
   },
-  separator: {
-    height: 1,
-    marginVertical: 1,
+  scannedDataContainer: {
+    padding: 20,
+    margin: 20,
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+  },
+  scannedDataText: {
+    fontWeight: "bold",
+    color: "#333333",
+    fontSize: 16,
+    marginTop: 10,
   },
   buttonContainer: {
     position: "absolute",
@@ -130,7 +144,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "#E24427",
+    backgroundColor: "#16AEC5",
     padding: 10,
     borderRadius: 5,
   },

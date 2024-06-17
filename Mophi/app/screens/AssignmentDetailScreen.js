@@ -1,229 +1,261 @@
-import DashboardComponent from "../components/DashboardComponent";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
   View,
+  StatusBar,
+  Platform,
+  Dimensions,
   Text,
-  TouchableOpacity,
   ScrollView,
-  useWindowDimensions,
+  TouchableOpacity,
 } from "react-native";
-import Constants from "expo-constants";
+import Sidebar from "../components/Sidebar";
+import { useNavigation } from "@react-navigation/native";
+import DashboardComponent from "../components/DashboardComponent";
 
 const AssignmentDetailScreen = () => {
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
   const navigation = useNavigation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showProductionSummary, setShowProductionSummary] = useState(false);
 
-  const handleLoginPress = () => {
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  const handleQRCodeScan = () => {
     navigation.navigate("QRCodeScreen");
   };
-  const handleLoginPress1 = () => {
-    navigation.navigate("ActWork");
+
+  const handleShowProductionSummary = () => {
+    setShowProductionSummary(true);
+  };
+
+  const renderProductionSummary = () => {
+    if (!showProductionSummary) return null;
+
+    return (
+      <View style={styles.productionSummaryContainer}>
+        <Text style={styles.sectionTitle}>Production Summary</Text>
+        <View style={styles.cardsContainer}>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>Assigned Cards</Text>
+            <Text style={styles.cardNumber}>34</Text>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>Completed Cards</Text>
+            <Text style={styles.cardNumber}>87</Text>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>Delayed Cards</Text>
+            <Text style={styles.cardNumber}>67</Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.showSummaryButton}
+          onPress={() => navigation.navigate("ActWork")}
+        >
+          <Text style={styles.buttonText}>Show Work Cards</Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.container}>
-          <DashboardComponent name="Assignment Detail" />
+      <StatusBar
+        backgroundColor="#0000004D"
+        barStyle="light-content"
+        translucent={true}
+      />
+      <DashboardComponent
+        name="Assignment Detail"
+        onToggleSidebar={handleToggleSidebar}
+      />
+      <ScrollView style={styles.content}>
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeMessage}>Assignment Details For:</Text>
+          <Text style={styles.welcomeMessage}>Ashutosh</Text>
         </View>
-        <View style={styles.separator} />
-        <View style={styles.assignmentContainer}>
-          <View style={styles.assignmentWelContainer}>
-            <Text style={styles.textContainer}>
-              Assignment Details For: Ashutosh
-            </Text>
-          </View>
-          <View style={styles.assignmentIconContainer}></View>
-        </View>
-        <View style={styles.separator} />
-        <View style={styles.assignmentDetailsContainer}>
-          <Text style={styles.text1Container}>Assignment Details</Text>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Date:</Text>
-            <Text style={styles.value}>03-06-2024</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Shift:</Text>
-            <Text style={styles.value}>Regular Shift</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Department:</Text>
-            <Text style={styles.value}>Assembly</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Activity:</Text>
-            <Text style={styles.value}>SEMI AUTO CORE ASSY</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Workstation:</Text>
-            <Text style={styles.value}>ATPL/SPM/99</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Skill:</Text>
-            <Text style={styles.value}>Welding</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Attendance Status:</Text>
-            <Text style={styles.value}>Present </Text>
-          </View>
-          <View style={styles.separator} />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
-              <Text style={styles.buttonText}>Scan QR code</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.separator} />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button1} onPress={() => {}}>
-              <Text style={styles.buttonText}>Show Production Summary</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.separator} />
-        <View style={styles.productionSummaryContainer}>
-          <Text style={styles.text1Container}>Production Summary</Text>
-          <View style={styles.statsContainer}>
-            <View style={styles.statBox1}>
-              <Text style={styles.label1}>Assigned Cards</Text>
-              <Text style={styles.value1}>100</Text>
-            </View>
-            <View style={styles.statBox1}>
-              <Text style={styles.label1}>Completed Cards</Text>
-              <Text style={styles.value1}>80</Text>
-            </View>
-            <View style={styles.statBox1}>
-              <Text style={styles.label1}>Delayed Cards</Text>
-              <Text style={styles.value1}>20</Text>
+
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Assignment Details</Text>
+          <View style={styles.assignmentDetailsContainer}>
+            {[
+              { label: "Date:", value: "17-06-2024" },
+              { label: "Shift:", value: "Regular Shift" },
+              { label: "Department:", value: "Assembly" },
+              { label: "Activity:", value: "SEMI AUTO CORE ASSY" },
+              { label: "Workstation:", value: "ATPL/SPM/99" },
+              { label: "Skill:", value: "Assembling" },
+              { label: "Attendance status:", value: "Present" },
+            ].map((item, index) => (
+              <View key={index} style={styles.assignmentDetailRow}>
+                <Text style={styles.assignmentDetailLabel}>{item.label}</Text>
+                <Text style={styles.assignmentDetailValue}>{item.value}</Text>
+              </View>
+            ))}
+
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleQRCodeScan}
+              >
+                <Text style={styles.buttonText}>Scan QR Code</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleShowProductionSummary}
+              >
+                <Text style={styles.buttonText}>Show Production Summary</Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.separator} />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button1}
-              onPress={handleLoginPress1}
-            >
-              <Text style={styles.buttonText}>Show Work Cards</Text>
-            </TouchableOpacity>
-          </View>
         </View>
+        {renderProductionSummary()}
       </ScrollView>
+      {isSidebarOpen && (
+        <View style={styles.sidebarContainer}>
+          <Sidebar onClose={handleCloseSidebar} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
 
-export default AssignmentDetailScreen;
+const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   safeArea: {
-    //flex: 1,
-    paddingTop: Constants.statusBarHeight,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  container: {
     flex: 1,
+    backgroundColor: "#16AEC5",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  assignmentContainer: {
-    flexDirection: "row",
+  content: {
+    flex: 1,
+    backgroundColor: "#f0f0f0",
+  },
+  welcomeContainer: {
+    backgroundColor: "#e0e0e0",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    margin: 5,
     alignItems: "center",
-    backgroundColor: "#6AE228",
+  },
+  welcomeMessage: {
+    fontSize: 25,
+    fontStyle: "italic",
+    color: "#333333",
+    textAlign: "center",
+  },
+  sectionContainer: {
     padding: 10,
-  },
-  assignmentWelContainer: {
-    flex: 1,
-  },
-  assignmentIconContainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderColor: "#000",
-    borderWidth: 1,
-    height: 50,
-  },
-  textContainer: {
-    fontWeight: "bold",
-    color: "white",
-    fontSize: 18,
-  },
-  assignmentDetailsContainer: {
-    backgroundColor: "#28C6E3",
-    padding: 10,
-  },
-  text1Container: {
-    fontWeight: "bold",
-    color: "white",
-    fontSize: 16,
     marginBottom: 10,
   },
-  infoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  label: {
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: "bold",
-    color: "white",
-    marginRight: 5,
+    marginBottom: 10,
   },
-  value: {
-    color: "white",
+  assignmentDetailsContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 10,
+    marginHorizontal: 10,
+    elevation: 2,
+    shadowColor: "#000000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  button: {
-    backgroundColor: "#E24427",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  button1: {
-    backgroundColor: "#6AE228",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  productionSummaryContainer: {
-    backgroundColor: "#A028E2",
-    padding: 10,
-  },
-  statsContainer: {
+  assignmentDetailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 10,
   },
-  statBox1: {
-    backgroundColor: "white",
-    width: 100,
-    height: 60,
-    marginTop: 10,
-    borderColor: "#FFD700",
-    borderWidth: 1,
-    justifyContent: "center",
+  assignmentDetailLabel: {
+    fontSize: 16,
+    color: "#333333",
+  },
+  assignmentDetailValue: {
+    fontSize: 16,
+    color: "#333333",
+  },
+  buttonsContainer: {
+    flexDirection: "column",
     alignItems: "center",
   },
-  label1: {
-    fontSize: 12,
-    fontWeight: "bold",
+  button: {
+    backgroundColor: "#16AEC5",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    width: "80%",
+    marginBottom: 10,
+    alignItems: "center",
   },
-  value1: {
+  buttonText: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#ffffff",
   },
-  separator: {
-    height: 1,
-    backgroundColor: "#ddd",
-    marginVertical: 5,
+  productionSummaryContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 10,
+    marginHorizontal: 10,
+    elevation: 2,
+    shadowColor: "#000000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
+  },
+  cardsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  card: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    padding: 10,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  cardNumber: {
+    fontSize: 20,
+    color: "#333333",
+    textAlign: "center",
+    marginTop: 5,
+  },
+  showSummaryButton: {
+    backgroundColor: "#16AEC5",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignSelf: "center",
+    marginTop: 10,
+  },
+  sidebarContainer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: width * 0.7,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
 });
+
+export default AssignmentDetailScreen;
